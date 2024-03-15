@@ -9,7 +9,9 @@ export const globalErrorHandling = (error, req, res, next) => {
   if (req.validationError) {
     return res.status(error?.cause || 400).json({
       message: error?.message,
-      validationError: req?.validationError?.details,
+      validationError: req?.validationError?.details.map((error) => {
+        return { message: error?.message };
+      }),
     });
   }
   if (process.env.MODE == "DEV") {

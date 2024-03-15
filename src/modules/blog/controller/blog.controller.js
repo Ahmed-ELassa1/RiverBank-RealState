@@ -37,7 +37,23 @@ export const addBlog = async (req, res, next) => {
   }
   req.body.createdBy = req.user._id;
   const newBlog = await blogModel.create(req.body);
-  return res.status(201).json({ message: "done", data: newBlog });
+
+  if (newBlog) {
+    const unSelectetAttributes = [
+      "isDeleted",
+      "updatedAt",
+      "__v",
+      "createdBy",
+      "createdAt",
+      "customId",
+    ];
+    const clonedResponse = { ...newBlog.toObject() };
+    // Construct a new object with the desired fields
+    unSelectetAttributes.forEach((element) => {
+      delete clonedResponse[element];
+    });
+    return res.status(201).json({ data: clonedResponse });
+  }
 };
 export const updateBlog = async (req, res, next) => {
   const blogExist = await blogModel.findOne({
@@ -113,14 +129,17 @@ export const deleteBlog = async (req, res, next) => {
   if (!blog) {
     return next(new Error("blog not found", { cause: 404 }));
   }
-  if (blog.mainImage) {
+  const blogFolderPath = `${process.env.APP_NAME}/blogs/${blog?.customId}`;
+  if (blog?.mainImage) {
     await cloudinary.uploader.destroy(blog.mainImage?.public_id);
+    await cloudinary?.api?.delete_all_resources(blogFolderPath);
+    await cloudinary?.api?.delete_folder(blogFolderPath);
   }
-  if (blog.subImages) {
-    for (const image of blog.subImages) {
-      await cloudinary.uploader.destroy(image?.public_id);
-    }
+  if (blog?.subImages.length > 0 && !blog?.mainImage) {
+      await cloudinary?.api?.delete_all_resources(blogFolderPath);
+      await cloudinary?.api?.delete_folder(blogFolderPath);
   }
+
   const deletedBlog = await blogModel.findByIdAndUpdate(
     { _id: req.params.id },
     { isDeleted: true },
@@ -129,5 +148,5 @@ export const deleteBlog = async (req, res, next) => {
   if (!deletedBlog.isDeleted) {
     return next(new Error("failed to delete blog", { cause: 400 }));
   }
-  return res.status(200).json({ message: "done", deletedBlog });
+  return res.status(200).json(true);
 };

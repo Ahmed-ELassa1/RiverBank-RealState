@@ -26,12 +26,6 @@ const clientRequestSchema = new Schema(
       min: [3, "min length 3 char"],
       max: [500, "max length 500 char"],
     },
-    image: Object,
-    createdBy: {
-      type: Types.ObjectId,
-      required: [true, "userId is required"],
-      ref: "User",
-    },
     isDeleted: {
       type: Boolean,
       default: false,
