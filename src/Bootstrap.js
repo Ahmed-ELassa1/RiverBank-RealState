@@ -1,11 +1,27 @@
 import connection from "./DB/connection.js";
+import cors from "cors";
 import { globalErrorHandling } from "./utils/asyncHandler.js";
 import userRouter from "./modules/user/user.router.js";
 import blogRouter from "./modules/blog/blog.router.js";
 import clientRequestRouter from "./modules/clientRequest/clientRequest.router.js";
 import propertyRouter from "./modules/property/property.router.js";
 function Bootstrap(app, express) {
+  var whitelist = ["http://example1.com", "http://example2.com"];
   connection();
+  if (process.env.MODE == "DEV") {
+    app.use(cors());
+  } else {
+    app.use(async (req, res, next) => {
+      if (!whitelist.includes(req.header("origin"))) {
+        return next(new Error("not allowed by cores", { cause: 502 }));
+      }
+      await res.header("Access-Control-Allow-Origin", "*");
+      await res.header("Access-Control-Allow-Header", "*");
+      await res.header("Access-Control-Allow-Private-network", "true");
+      await res.header("Access-Control-Allow-Method", "*");
+      next();
+    });
+  }
   app.use(express.json());
   app.use("/user", userRouter);
   app.use("/blog", blogRouter);
