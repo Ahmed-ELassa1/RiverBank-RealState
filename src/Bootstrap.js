@@ -5,6 +5,8 @@ import userRouter from "./modules/user/user.router.js";
 import blogRouter from "./modules/blog/blog.router.js";
 import clientRequestRouter from "./modules/clientRequest/clientRequest.router.js";
 import propertyRouter from "./modules/property/property.router.js";
+import developersRouter from "./modules/developer/developer.router.js";
+import projectRouter from "./modules/projects/project.router.js";
 function Bootstrap(app, express) {
   var whitelist = ["http://example1.com", "http://example2.com"];
   connection();
@@ -27,6 +29,8 @@ function Bootstrap(app, express) {
   app.use("/blog", blogRouter);
   app.use("/clientRequest", clientRequestRouter);
   app.use("/property", propertyRouter);
+  app.use("/developer", developersRouter);
+  app.use("/project", projectRouter);
   app.use(globalErrorHandling);
 }
 export default Bootstrap;
