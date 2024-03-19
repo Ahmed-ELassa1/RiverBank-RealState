@@ -52,7 +52,7 @@ class ApiFeatures {
       this.mongooseQuery = this.mongooseQuery.find({
         $or: [
           { name: { $regex: this.data.search } },
-          { description: { $regex: this.data.search } },
+          { title: { $regex: this.data.search } },
         ],
       });
     }
