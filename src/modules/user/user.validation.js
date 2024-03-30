@@ -7,6 +7,11 @@ export const loginSchema = joi
     password: generalFields.password,
   })
   .required();
+// export const signOutSchema = joi
+//   .object({
+//     email: generalFields.email,
+//   })
+//   .required();
 export const confirmEmailSchema = joi
   .object({
     token: joi.string().required(),

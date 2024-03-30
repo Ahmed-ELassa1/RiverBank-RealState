@@ -1,11 +1,14 @@
 import { Router } from "express";
 import { asyncHandler } from "../../utils/asyncHandler.js";
+import tokenSchema from "../../utils/tokenSchema.js";
 import * as userValidation from "./user.validation.js";
 import * as authController from "./controller/user.controller.js";
 import uploadFiles, {
   uploadFilesValidation,
 } from "../../utils/cloudinaryMulter.js";
 import validation from "../../DB/middlewares/validation.js";
+import auth from "../../DB/middlewares/auth.js";
+import userEndPointsRoles from "./user.endPoinetsRoles.js";
 const router = Router();
 router
   .post(
@@ -19,6 +22,12 @@ router
     validation(userValidation.loginSchema),
     asyncHandler(authController.login)
   )
+  .post(
+    "/signOut",
+    validation(tokenSchema, true),
+    auth(userEndPointsRoles.signOut),
+    asyncHandler(authController.signOut)
+  )
   .get(
     "/confirmEmail/:token",
     validation(userValidation.confirmEmailSchema),
@@ -28,6 +37,13 @@ router
     "/refreshToken/:token",
     validation(userValidation.refreshTokenSchema),
     asyncHandler(authController.refreshToken)
+  )
+  .post(
+    "/sessionRefreshToken",
+    validation(tokenSchema, true),
+    auth(userEndPointsRoles.signOut),
+    // validation(userValidation.refreshTokenSchema),
+    asyncHandler(authController.sessionRefreshToken)
   )
   .patch(
     "/sendCode",

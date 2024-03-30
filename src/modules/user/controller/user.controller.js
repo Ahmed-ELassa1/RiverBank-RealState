@@ -198,3 +198,25 @@ export const forgetPassword = async (req, res, next) => {
     .select("email userName gender image ");
   return res.status(200).json({ message: "done", data: newUser });
 };
+export const signOut = async (req, res, next) => {
+  await userModel.findByIdAndUpdate(
+    { _id: req.user._id },
+    { status: "offline" },
+    { new: true }
+  );
+  return res.status(200).json({ message: "done" });
+};
+
+export const sessionRefreshToken = async (req, res, next) => {
+  const newToken = generateToken({
+    payload: {
+      _id: req.user._id,
+      email: req.user.email,
+      userName: req.user.userName,
+      role: req.user.role,
+    },
+    signature: process.env.EMAIL_TOKEN_SIGNATURE,
+    expireIn: 60 * 60 * 24 * 30,
+  });
+  return res.status(200).json({ ref_token: newToken });
+};
