@@ -26,6 +26,16 @@ const clientRequestSchema = new Schema(
       min: [3, "min length 3 char"],
       max: [500, "max length 500 char"],
     },
+    read: {
+      type: String,
+      enum: ["read", "unRead"],
+      default: "unRead",
+    },
+    seen: {
+      type: String,
+      enum: ["seen", "unSeen"],
+      default: "unSeen",
+    },
     isDeleted: {
       type: Boolean,
       default: false,

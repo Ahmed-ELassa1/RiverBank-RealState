@@ -13,6 +13,13 @@ router
     validation(clientRequestValidation.addClientRequestSchema),
     asyncHandler(clientRequestController.addClientRequest)
   )
+  .put(
+    "/:id",
+    validation(tokenSchema, true),
+    auth(clientRequestEndPointsRoles.updateClientRequest),
+    validation(clientRequestValidation.updateClientRequestSchema),
+    asyncHandler(clientRequestController.updateClientRequest)
+  )
   .get(
     "/",
     validation(tokenSchema, true),

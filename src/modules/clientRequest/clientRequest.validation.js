@@ -43,6 +43,13 @@ export const addClientRequestSchema = joi
       .required(),
   })
   .required();
+export const updateClientRequestSchema = joi
+  .object({
+    read: joi.string().valid("read", "unRead"),
+    seen: joi.string().valid("seen", "unSeen"),
+    id: generalFields.id,
+  })
+  .required();
 export const getClientRequestByIdSchema = joi
   .object({
     id: generalFields.id,

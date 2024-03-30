@@ -44,6 +44,35 @@ export const getClientRequestById = async (req, res, next) => {
   }
   return res.status(200).json({ message: "done", data: clientRequest });
 };
+export const updateClientRequest = async (req, res, next) => {
+  const clientRequest = await clientRequestModel
+    .findOne({ _id: req.params.id, isDeleted: false })
+    .select("-isDeleted,-updatedAt,-__v,-createdBy,-createdAt");
+
+  if (!clientRequest) {
+    return next(new Error("Client Request not found", { cause: 404 }));
+  }
+  const clientRequestUpdated = await clientRequestModel.findOneAndUpdate(
+    { _id: req.params.id, isDeleted: false },
+    req.body,
+    { new: true }
+  );
+  if (clientRequestUpdated) {
+    const unSelectetAttributes = [
+      "isDeleted",
+      "updatedAt",
+      "__v",
+      "createdAt",
+      "customId",
+    ];
+    const clonedResponse = { ...clientRequestUpdated.toObject() };
+    // Construct a new object with the desired fields
+    unSelectetAttributes.forEach((element) => {
+      delete clonedResponse[element];
+    });
+    return res.status(200).json({ message: "done", data: clonedResponse });
+  }
+};
 export const deleteClientRequest = async (req, res, next) => {
   const clientRequestExist = await clientRequestModel.findOne({
     _id: req.params.id,
